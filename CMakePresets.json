@@ -1,0 +1,35 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "linux-clangcl",
+      "displayName": "Linux-host clang-cl cross-compile (x64-windows)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/linux-clangcl",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "environment": {
+        "XWIN_SYSROOT": "$env{HOME}/.cache/xwin/out",
+        "LLVM_MINGW_BIN": "/opt/llvm-mingw/bin"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-clangcl",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/custom-triplets",
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/custom-ports",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/cmake/toolchain-linux-clangcl.cmake"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "linux-clangcl",
+      "displayName": "Release (Linux clang-cl)",
+      "configurePreset": "linux-clangcl"
+    }
+  ]
+}

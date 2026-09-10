@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "debug": true,
+  "logChanges": true,
+  "logLevel": "debug",
+  "dryRun": false,
+  "rulesDirectory": "GlobalRules",
+  "debugGlobal": ""
+}

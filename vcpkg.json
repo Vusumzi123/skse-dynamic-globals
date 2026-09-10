@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "skse-globals",
+  "version-semver": "0.1.0",
+  "description": "GlobalRules: perk-gated event -> global modifier framework (SKSE plugin, Linux cross-compiled).",
+  "license": "GPL-3.0-or-later",
+  "dependencies": [
+    "directxmath",
+    "directxtk",
+    "fmt",
+    "nlohmann-json",
+    "rapidcsv",
+    "simpleini",
+    "spdlog",
+    "tinyexpr",
+    "toml11",
+    "xbyak"
+  ]
+}

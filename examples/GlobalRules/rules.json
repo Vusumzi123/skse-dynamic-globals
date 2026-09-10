@@ -1,0 +1,28 @@
+[
+  {
+    "event": "level_increase",
+    "target": "*",
+    "global": "YourMod.esp|GLOB_RewardPoints",
+    "value": "newLevel * 3"
+  },
+  {
+    "event": "activate",
+    "target": "*",
+    "perk": "YourMod.esp|CND_IsFriend",
+    "global": "YourMod.esp|GLOB_FriendBonus",
+    "value": "x + 1"
+  },
+  {
+    "event": "cell_change",
+    "target": "*",
+    "perk": "YourMod.esp|CND_InDungeon",
+    "global": "YourMod.esp|GLOB_DungeonsEntered",
+    "value": "x + entering"
+  },
+  {
+    "event": "equip",
+    "target": "YourMod.esp|0x000D62",
+    "global": "YourMod.esp|GLOB_SetBonusActive",
+    "value": "if(equipped, 1, 0)"
+  }
+]

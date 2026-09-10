@@ -1,0 +1,6 @@
+[
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_NonFinite", "value": "1/0" },
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_MissingGlobal", "value": "x + 1" },
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_BadExpr", "value": "x + + 1" },
+  { "event": "does_not_exist", "target": "*", "global": "GRTest.esp|GRT_Constant", "value": "1" }
+]

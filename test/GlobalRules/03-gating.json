@@ -1,0 +1,6 @@
+[
+  { "event": "activate", "target": "*", "perk": "GRTest.esp|GRT_P_AlwaysTrue", "global": "GRTest.esp|GRT_PerkPass", "value": "x + 1" },
+  { "event": "activate", "target": "*", "perk": "GRTest.esp|GRT_P_InThievesGuild", "invert": true, "global": "GRTest.esp|GRT_PerkInvert", "value": "x + 1" },
+  { "event": "level_increase", "target": "*", "global": "GRTest.esp|GRT_LastWins", "value": "1" },
+  { "event": "level_increase", "target": "*", "global": "GRTest.esp|GRT_LastWins", "value": "newLevel" }
+]

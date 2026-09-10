@@ -1,0 +1,10 @@
+[
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_ActivateCount", "value": "x + 1" },
+  { "event": "equip", "target": "*", "global": "GRTest.esp|GRT_EquipState", "value": "if(equipped, 1, 0)" },
+  { "event": "kill", "target": "*", "global": "GRTest.esp|GRT_KillCount", "value": "x + 1" },
+  { "event": "menu", "target": "InventoryMenu", "global": "GRTest.esp|GRT_MenuOpen", "value": "opening" },
+  { "event": "container_changed", "target": "*", "global": "GRTest.esp|GRT_ItemDelta", "value": "x + count" },
+  { "event": "quest_stage", "target": "*", "global": "GRTest.esp|GRT_QuestStage", "value": "stage" },
+  { "event": "cell_change", "target": "*", "global": "GRTest.esp|GRT_CellEnter", "value": "x + entering" },
+  { "event": "level_increase", "target": "*", "global": "GRTest.esp|GRT_LevelReward", "value": "newLevel * 3" }
+]

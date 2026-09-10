@@ -1,0 +1,7 @@
+[
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_Expr", "value": "x + level * 0.5" },
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_Constant", "value": "42" },
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_Clamp", "value": "clamp(x + 1, 0, 10)" },
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_Stat", "value": "gold" },
+  { "event": "activate", "target": "*", "global": "GRTest.esp|GRT_FormID", "value": "targetFormID" }
+]
