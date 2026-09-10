@@ -4,7 +4,7 @@ An SKSE plugin for Skyrim SE/AE that lets modders **change global variables when
 events happen, gated by perk conditions** — no Papyrus scripts, no recompiled code.
 Everything is configured through JSON files.
 
-## The idea
+-------------
 
 Skyrim mods constantly want to react to game state ("every time the player kills a bandit,
 add 1 to `GLOB_BanditsKilled`"). Normally that means Papyrus scripts or a bespoke SKSE
