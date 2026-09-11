@@ -18,7 +18,7 @@ cd "$REPO_DIR"
 
 MOD_DIR="${AMETHYST_MOD_DIR:-/mnt/Data/Mod Staging/Default/Skyrim Special Edition/mods/GlobalRules}"
 GAME_DIR="${SKYRIM_DIR:-/mnt/Games/SteamLibrary/steamapps/common/Skyrim Special Edition}"
-XEDIT_SCRIPTS_DIR="${XEDIT_SCRIPTS_DIR:-/mnt/Games/Skyrim Apps/SSEEdit 4.1.5f/Edit Scripts}"
+XEDIT_SCRIPTS_DIR="${XEDIT_SCRIPTS_DIR:-/mnt/Data/Mod Staging/Default/Skyrim Special Edition/Applications/SSEEdit/Edit Scripts}"
 BUILD_DLL="$REPO_DIR/build/linux-clangcl/GlobalRules.dll"
 
 BUILD=0; DRY_RUN=0; CLEAN_LOOSE=0; ESP_SRC=""
@@ -66,15 +66,22 @@ run cp -f "$REPO_DIR/test/GlobalRules.dryrun.json" "$PLUG_DIR/GlobalRules.dryrun
 run cp -f "$REPO_DIR/test/GlobalRules.json"        "$PLUG_DIR/GlobalRules.json.bak"
 for f in "$REPO_DIR"/test/GlobalRules/0[1-4]-*.json; do run cp -f "$f" "$RULES_DIR/"; done
 
+# Prefer an explicit --esp. Otherwise, if xEdit has written a fresh GRTest.esp
+# into the game Data folder, sync it into the mod. Use -ef so a Data symlink
+# pointing back at the mod file is detected (avoids a same-file cp error).
+if [[ -z "$ESP_SRC" && -f "$GAME_DIR/Data/GRTest.esp" ]]; then
+    ESP_SRC="$GAME_DIR/Data/GRTest.esp"
+fi
 if [[ -n "$ESP_SRC" ]]; then
     [[ -f "$ESP_SRC" ]] || die "ESP not found: $ESP_SRC"
-    run cp -f "$ESP_SRC" "$MOD_DIR/GRTest.esp"
-elif [[ ! -f "$MOD_DIR/GRTest.esp" ]]; then
-    if [[ -f "$GAME_DIR/Data/GRTest.esp" ]]; then
-        run cp -f "$GAME_DIR/Data/GRTest.esp" "$MOD_DIR/GRTest.esp"
+    if [[ "$ESP_SRC" -ef "$MOD_DIR/GRTest.esp" ]]; then
+        info "GRTest.esp already in sync (same file)"
     else
-        echo "warning: no GRTest.esp in the mod and none at $GAME_DIR/Data/GRTest.esp" >&2
+        info "Syncing GRTest.esp: $ESP_SRC -> $MOD_DIR/GRTest.esp"
+        run cp -f "$ESP_SRC" "$MOD_DIR/GRTest.esp"
     fi
+elif [[ ! -f "$MOD_DIR/GRTest.esp" ]]; then
+    echo "warning: no GRTest.esp in the mod and none at $GAME_DIR/Data/GRTest.esp" >&2
 fi
 
 [[ -f "$REPO_DIR/tools/GRTest-Builder.pas" ]] || die "tools/GRTest-Builder.pas not found"

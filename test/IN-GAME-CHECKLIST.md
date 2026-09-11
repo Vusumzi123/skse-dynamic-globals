@@ -7,8 +7,11 @@ thing → `show` the global → check the log**.
 - Globals are read with `show <name>`, set with `set <name> to <value>`.
 - Keep the log open in another terminal:
   ```bash
-  tail -f /home/vuszi/Projects/sysop-brain/skse-globals/GlobalRules.log
+  tail -f "/mnt/Games/SteamLibrary/steamapps/compatdata/489830/pfx/drive_c/users/steamuser/Documents/My Games/Skyrim Special Edition/SKSE/GlobalRules.log"
   ```
+  (Amethyst does not relocate logs. The plugin writes to the standard SKSE log dir
+  inside the Proton prefix — app `489830`. Ignore the `4147313708` prefix under
+  `~/.local/share/Steam`; that is a stale non-Steam shortcut prefix.)
 
 > **Current status (2026-09-10):** the `cell_change` crash **and** the `entering` flag bug
 > are **fixed** in the deployed DLL (md5 `80f14410…`). The perk-gated rules (§11) now
@@ -182,8 +185,11 @@ thing → `show` the global → check the log**.
   `GRT_PerkInvert` should now **stop** increasing (invert of "in faction").
 - [ ] Leave the guild to restore it:
   ```
-  player.removefac 0x00029DA9 1
+  player.removefac 0x00029DA9
   ```
+  (`removefac` takes **one** argument — a trailing rank/count like `1` is invalid
+  and the command does nothing. Use `player.removefac 0x00029DA9`, or
+  `player.addfac 0x00029DA9 -1`.)
 
 ---
 
@@ -268,7 +274,7 @@ thing → `show` the global → check the log**.
 
 Console helpers: `bat grtreset`, `show <global>`, `set <global> to <v>`,
 `player.advskill <skill> <amount>`, `setstage <quest> <n>`, `coc <cell>`,
-`player.addfac/removefac 0x00029DA9 1`, `set GRT_Debug to 1`.
+`player.addfac 0x00029DA9 1` / `player.removefac 0x00029DA9`, `set GRT_Debug to 1`.
 
 ---
 
