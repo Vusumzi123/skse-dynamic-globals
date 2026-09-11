@@ -2,3 +2,4 @@ build/
 vcpkg_installed/
 .cache/
 GlobalRules.log
+release.sh
