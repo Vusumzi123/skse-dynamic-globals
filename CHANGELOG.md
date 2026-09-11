@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Event sinks are now registered only for the events referenced by at least one loaded
+  rule, instead of all eight. Unused event types no longer construct an event context
+  or dispatch a lookup, matching the documented design.
+
+### Changed
+
+- `Engine::OnEvent` resolves its event bucket through a transparent hash, removing a
+  `std::string` heap allocation on every dispatched event (notably `container_changed`).
+- Rule indices in logs are now unique across all rule files instead of restarting at 0
+  per file.
+- The expression variable count is now a single `Expression::kVarCount` constant shared
+  by the array size, variable table, and loops.
+- `Config::Load` field parsing is factored into `readBool`/`readStr` helpers.
+
+### Fixed
+
+- Removed the `Expression` move constructor and move assignment, which copied the
+  `values_` array but left `vars_` and the compiled AST pointing into the moved-from
+  object (a latent use-after-free). `Expression` is now non-copyable and non-movable and
+  is only ever held via `std::unique_ptr`.
+
 ## [1.1.1] - 2026-09-11
 
 ### Fixed
