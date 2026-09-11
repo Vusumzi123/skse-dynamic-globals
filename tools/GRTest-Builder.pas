@@ -3,7 +3,7 @@
   Builds the GlobalRules test plugin: GRTest.esp
 
   Creates:
-    - 19 float GLOB records (GRT_*)
+    - 20 float GLOB records (GRT_*)
     - 2 PERK records used as condition containers:
         GRT_P_AlwaysTrue      (no conditions -> always true)
         GRT_P_InThievesGuild  (Subject GetInFaction <Thieves Guild> == 1)
@@ -83,6 +83,7 @@ begin
   AddFloatGlobal(globGrp, 'GRT_ItemDelta');
   AddFloatGlobal(globGrp, 'GRT_QuestStage');
   AddFloatGlobal(globGrp, 'GRT_CellEnter');
+  AddFloatGlobal(globGrp, 'GRT_CellEnterTargeted');
   AddFloatGlobal(globGrp, 'GRT_LevelReward');
   AddFloatGlobal(globGrp, 'GRT_Expr');
   AddFloatGlobal(globGrp, 'GRT_Constant');
@@ -95,7 +96,7 @@ begin
   AddFloatGlobal(globGrp, 'GRT_NonFinite');
   AddFloatGlobal(globGrp, 'GRT_BadExpr');
 
-  AddMessage('Created 19 globals.');
+  AddMessage('Created 20 globals.');
 
   // ----- Perks (condition containers) --------------------------------------
   perkGrp := GroupBySignature(f, 'PERK');

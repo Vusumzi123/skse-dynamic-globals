@@ -6,6 +6,7 @@ set GRT_MenuOpen to 0
 set GRT_ItemDelta to 0
 set GRT_QuestStage to 0
 set GRT_CellEnter to 0
+set GRT_CellEnterTargeted to 0
 set GRT_LevelReward to 0
 set GRT_Expr to 0
 set GRT_Constant to 0

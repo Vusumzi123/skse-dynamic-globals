@@ -6,5 +6,6 @@
   { "event": "container_changed", "target": "*", "global": "GRTest.esp|GRT_ItemDelta", "value": "x + count" },
   { "event": "quest_stage", "target": "*", "global": "GRTest.esp|GRT_QuestStage", "value": "stage" },
   { "event": "cell_change", "target": "*", "global": "GRTest.esp|GRT_CellEnter", "value": "x + entering" },
+  { "event": "cell_change", "target": "Skyrim.esm|0x00009732", "global": "GRTest.esp|GRT_CellEnterTargeted", "value": "x + entering" },
   { "event": "level_increase", "target": "*", "global": "GRTest.esp|GRT_LevelReward", "value": "newLevel * 3" }
 ]
