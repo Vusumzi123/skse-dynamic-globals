@@ -124,6 +124,7 @@ namespace GlobalRules
         }
         std::sort(files.begin(), files.end());
 
+        std::size_t index = 0;
         for (const auto& file : files) {
             try {
                 std::ifstream stream(file);
@@ -136,9 +137,8 @@ namespace GlobalRules
                     SKSE::log::warn("rule file '{}' is not a JSON array; skipping", file.string());
                     continue;
                 }
-                std::size_t idx = 0;
                 for (const auto& entry : root) {
-                    auto rule = ParseRule(entry, idx++);
+                    auto rule = ParseRule(entry, index++);
                     if (rule) {
                         rules.push_back(std::move(*rule));
                     }
