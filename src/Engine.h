@@ -6,6 +6,7 @@
 #include "Events.h"
 #include "Rules.h"
 
+#include <functional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -13,6 +14,15 @@
 
 namespace GlobalRules
 {
+    struct StringHash
+    {
+        using is_transparent = void;
+        std::size_t operator()(std::string_view a_s) const noexcept
+        {
+            return std::hash<std::string_view>{}(a_s);
+        }
+    };
+
     class Engine
     {
     public:
@@ -33,7 +43,7 @@ namespace GlobalRules
 
         Config config_;
         std::vector<Rule> rules_;
-        std::unordered_map<std::string, std::vector<std::size_t>> byEvent_;
+        std::unordered_map<std::string, std::vector<std::size_t>, StringHash, std::equal_to<>> byEvent_;
         RE::TESGlobal* debugGlobalForm_ = nullptr;
     };
 }

@@ -113,7 +113,7 @@ namespace GlobalRules
 
     void Engine::OnEvent(std::string_view a_name, const EventContext& a_ctx)
     {
-        auto it = byEvent_.find(std::string(a_name));
+        auto it = byEvent_.find(a_name);
         if (it == byEvent_.end()) {
             return;
         }
