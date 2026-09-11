@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#include <unordered_set>
+
 #include "Condition.h"
 #include "FormId.h"
 #include "Persistence.h"
@@ -81,7 +83,13 @@ namespace GlobalRules
             EventManager::Get().SetHandler([](std::string_view a_name, const EventContext& a_ctx) {
                 Engine::Get().OnEvent(a_name, a_ctx);
             });
-            EventManager::Get().RegisterAll();
+
+            std::unordered_set<std::string> used;
+            used.reserve(byEvent_.size());
+            for (const auto& kv : byEvent_) {
+                used.insert(kv.first);
+            }
+            EventManager::Get().RegisterAll(used);
         }
 
         SKSE::log::info("GlobalRules: initialized");

@@ -174,22 +174,38 @@ namespace GlobalRules
         handler_ = std::move(a_handler);
     }
 
-    void EventManager::RegisterAll()
+    void EventManager::RegisterAll(const std::unordered_set<std::string>& a_events)
     {
         if (registered_) {
             return;
         }
         const auto holder = RE::ScriptEventSourceHolder::GetSingleton();
 
-        holder->AddEventSink<RE::TESActivateEvent>(&g_activateSink);
-        holder->AddEventSink<RE::TESEquipEvent>(&g_equipSink);
-        holder->AddEventSink<RE::TESContainerChangedEvent>(&g_containerSink);
-        holder->AddEventSink<RE::TESQuestStageEvent>(&g_questStageSink);
+        if (a_events.contains("activate")) {
+            holder->AddEventSink<RE::TESActivateEvent>(&g_activateSink);
+        }
+        if (a_events.contains("equip")) {
+            holder->AddEventSink<RE::TESEquipEvent>(&g_equipSink);
+        }
+        if (a_events.contains("container_changed")) {
+            holder->AddEventSink<RE::TESContainerChangedEvent>(&g_containerSink);
+        }
+        if (a_events.contains("quest_stage")) {
+            holder->AddEventSink<RE::TESQuestStageEvent>(&g_questStageSink);
+        }
 
-        RE::ActorKill::GetEventSource()->AddEventSink(&g_killSink);
-        RE::LevelIncrease::GetEventSource()->AddEventSink(&g_levelSink);
-        RE::UI::GetSingleton()->AddEventSink<RE::MenuOpenCloseEvent>(&g_menuSink);
-        RE::PlayerCharacter::GetSingleton()->AsBGSActorCellEventSource()->AddEventSink(&g_cellSink);
+        if (a_events.contains("kill")) {
+            RE::ActorKill::GetEventSource()->AddEventSink(&g_killSink);
+        }
+        if (a_events.contains("level_increase")) {
+            RE::LevelIncrease::GetEventSource()->AddEventSink(&g_levelSink);
+        }
+        if (a_events.contains("menu")) {
+            RE::UI::GetSingleton()->AddEventSink<RE::MenuOpenCloseEvent>(&g_menuSink);
+        }
+        if (a_events.contains("cell_change")) {
+            RE::PlayerCharacter::GetSingleton()->AsBGSActorCellEventSource()->AddEventSink(&g_cellSink);
+        }
 
         registered_ = true;
     }

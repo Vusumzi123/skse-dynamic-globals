@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace GlobalRules
 {
@@ -29,7 +30,7 @@ namespace GlobalRules
         static EventManager& Get();
 
         void SetHandler(Handler a_handler);
-        void RegisterAll();
+        void RegisterAll(const std::unordered_set<std::string>& a_events);
         void UnregisterAll();
 
         void Dispatch(std::string_view a_name, const EventContext& a_ctx);
