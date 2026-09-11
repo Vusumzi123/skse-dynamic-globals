@@ -82,27 +82,24 @@ namespace GlobalRules
                 return config;
             }
 
-            if (root.contains("enabled") && root["enabled"].is_boolean()) {
-                config.enabled = root["enabled"].get<bool>();
-            }
-            if (root.contains("debug") && root["debug"].is_boolean()) {
-                config.debug = root["debug"].get<bool>();
-            }
-            if (root.contains("logChanges") && root["logChanges"].is_boolean()) {
-                config.logChanges = root["logChanges"].get<bool>();
-            }
-            if (root.contains("logLevel") && root["logLevel"].is_string()) {
-                config.logLevel = root["logLevel"].get<std::string>();
-            }
-            if (root.contains("dryRun") && root["dryRun"].is_boolean()) {
-                config.dryRun = root["dryRun"].get<bool>();
-            }
-            if (root.contains("rulesDirectory") && root["rulesDirectory"].is_string()) {
-                config.rulesDirectory = root["rulesDirectory"].get<std::string>();
-            }
-            if (root.contains("debugGlobal") && root["debugGlobal"].is_string()) {
-                config.debugGlobal = root["debugGlobal"].get<std::string>();
-            }
+            const auto readBool = [&root](const char* a_key, bool& a_out) {
+                if (root.contains(a_key) && root[a_key].is_boolean()) {
+                    a_out = root[a_key].get<bool>();
+                }
+            };
+            const auto readStr = [&root](const char* a_key, std::string& a_out) {
+                if (root.contains(a_key) && root[a_key].is_string()) {
+                    a_out = root[a_key].get<std::string>();
+                }
+            };
+
+            readBool("enabled",        config.enabled);
+            readBool("debug",          config.debug);
+            readBool("logChanges",     config.logChanges);
+            readStr("logLevel",        config.logLevel);
+            readBool("dryRun",         config.dryRun);
+            readStr("rulesDirectory",  config.rulesDirectory);
+            readStr("debugGlobal",     config.debugGlobal);
         } catch (const std::exception& e) {
             SKSE::log::warn("failed to parse config '{}': {}", path.string(), e.what());
         }
