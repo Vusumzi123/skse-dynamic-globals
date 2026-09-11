@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-10
+
+### Added
+
+- powerofthree's Tweaks soft-dependency: detected at load and logged; when present,
+  editorID references resolve for form types the engine does not natively cache (e.g.
+  `BGSPerk`), and perk names appear in logs via po3's `GetFormEditorID`.
+- `deploy.sh` to stage the built plugin, test kit, and `GRTest-Builder.pas` into an
+  Amethyst Mod Manager mod.
+
+### Fixed
+
+- Perk gating now references the `GRT_P_*` perks by FormID (`GRTest.esp|0x000814`,
+  `0x000815`), and `tools/GRTest-Builder.pas` no longer emits a stray empty condition.
+  The earlier `LookupByEditorID` failure was an engine limitation (`BGSPerk` is not
+  natively cached), not an ESP defect.
+
 ## [1.0.0] - 2026-09-10
 
 ### Added
@@ -26,5 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `cell_change` enter/leave direction was always reported as "leave" because the event
   flags value was treated as a bitmask instead of a raw enum.
 
-[Unreleased]: https://github.com/Vusumzi123/skse-dynamic-globals/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Vusumzi123/skse-dynamic-globals/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Vusumzi123/skse-dynamic-globals/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Vusumzi123/skse-dynamic-globals/releases/tag/v1.0.0
