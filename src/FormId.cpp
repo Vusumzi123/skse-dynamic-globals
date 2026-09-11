@@ -74,10 +74,14 @@ namespace GlobalRules
 
         GetFormEditorIDFn GetPo3EditorIDFn()
         {
-            static GetFormEditorIDFn fn = [] {
-                const auto mod = REX::W32::GetModuleHandleW(L"po3_Tweaks.dll");
-                return mod ? reinterpret_cast<GetFormEditorIDFn>(REX::W32::GetProcAddress(mod, "GetFormEditorID")) : nullptr;
-            }();
+            // Cache only on success: po3_Tweaks.dll may not be loaded yet on the
+            // first call, so a failed lookup must be retried rather than latched.
+            static GetFormEditorIDFn fn = nullptr;
+            if (!fn) {
+                if (const auto mod = REX::W32::GetModuleHandleW(L"po3_Tweaks.dll")) {
+                    fn = reinterpret_cast<GetFormEditorIDFn>(REX::W32::GetProcAddress(mod, "GetFormEditorID"));
+                }
+            }
             return fn;
         }
     }

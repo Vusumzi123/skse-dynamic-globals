@@ -55,11 +55,44 @@ end;
 // Entry point
 // ---------------------------------------------------------------------------
 
+function FindLoadedFile(const aName: string): IInterface;
+var
+  i: Integer;
+  f: IInterface;
+begin
+  Result := nil;
+  for i := 0 to Pred(FileCount) do begin
+    f := FileByIndex(i);
+    if Assigned(f) and SameText(GetFileName(f), aName) then begin
+      Result := f;
+      Exit;
+    end;
+  end;
+end;
+
 function Initialize: Integer;
 var
   f, globGrp, perkGrp, perk, conditions, cond, ctda, faction: IInterface;
 begin
   Result := 0;
+
+  // Deterministic FormIDs (globals 0x800-0x813, perks 0x814-0x815) require a
+  // brand-new file: reusing a loaded file shifts every FormID because xEdit's
+  // next-object-ID counter is monotonic, which breaks the gating rules.
+  // xEdit also refuses AddNewFileName() while a same-named file exists on disk,
+  // so delete any stale copy first.
+  f := FindLoadedFile('GRTest.esp');
+  if Assigned(f) then begin
+    AddMessage('GRTest.esp is loaded in this session.');
+    AddMessage('Restart xEdit and load ONLY Skyrim.esm (deselect GRTest.esp), then re-run.');
+    Result := 1;
+    Exit;
+  end;
+
+  if FileExists(DataPath + 'GRTest.esp') then begin
+    AddMessage('Deleting existing ' + DataPath + 'GRTest.esp');
+    DeleteFile(DataPath + 'GRTest.esp');
+  end;
 
   f := AddNewFileName('GRTest.esp');
   if not Assigned(f) then begin

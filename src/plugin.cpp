@@ -10,8 +10,22 @@ namespace
         if (!a_msg) {
             return;
         }
-        if (a_msg->type == SKSE::MessagingInterface::kDataLoaded) {
+        switch (a_msg->type) {
+        case SKSE::MessagingInterface::kPostLoad:
+            // Defer this check to kPostLoad: SKSE loads plugins sequentially and
+            // "GlobalRules" sorts before "po3_Tweaks", so po3_Tweaks.dll is not
+            // yet in the process during SKSEPluginLoad.
+            if (GlobalRules::IsPo3TweaksLoaded()) {
+                SKSE::log::info("po3 Tweaks detected: editorID references resolve for all form types");
+            } else {
+                SKSE::log::warn("po3 Tweaks not detected: editorID references only resolve for natively-cached types (Global, Keyword, Quest, Race, Cell, ...); use FormID references for perks");
+            }
+            break;
+        case SKSE::MessagingInterface::kDataLoaded:
             GlobalRules::Engine::Get().OnDataLoaded();
+            break;
+        default:
+            break;
         }
     }
 }
@@ -26,12 +40,6 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
     GlobalRules::Persistence::Register(SKSE::GetSerializationInterface());
 
     SKSE::log::info("GlobalRules plugin v{} loaded", GLOBALRULES_VERSION_STRING);
-
-    if (GlobalRules::IsPo3TweaksLoaded()) {
-        SKSE::log::info("po3 Tweaks detected: editorID references resolve for all form types");
-    } else {
-        SKSE::log::warn("po3 Tweaks not detected: editorID references only resolve for natively-cached types (Global, Keyword, Quest, Race, Cell, ...); use FormID references for perks");
-    }
 
     return true;
 }
