@@ -18,9 +18,6 @@ namespace GlobalRules
         Expression(const Expression&) = delete;
         Expression& operator=(const Expression&) = delete;
 
-        Expression(Expression&&) noexcept;
-        Expression& operator=(Expression&&) noexcept;
-
         // Compiles the expression source. Returns true on success.
         bool Compile(const std::string& a_src);
 

@@ -59,31 +59,6 @@ namespace GlobalRules
         }
     }
 
-    Expression::Expression(Expression&& a_rhs) noexcept
-    {
-        *this = std::move(a_rhs);
-    }
-
-    Expression& Expression::operator=(Expression&& a_rhs) noexcept
-    {
-        if (this != &a_rhs) {
-            if (expr_) {
-                te_free(expr_);
-            }
-            src_ = std::move(a_rhs.src_);
-            expr_ = a_rhs.expr_;
-            isConstant_ = a_rhs.isConstant_;
-            constantValue_ = a_rhs.constantValue_;
-            compiled_ = a_rhs.compiled_;
-            std::copy(std::begin(a_rhs.values_), std::end(a_rhs.values_), values_);
-            vars_ = std::move(a_rhs.vars_);
-
-            a_rhs.expr_ = nullptr;
-            a_rhs.compiled_ = false;
-        }
-        return *this;
-    }
-
     void Expression::BuildVariables()
     {
         vars_.clear();
