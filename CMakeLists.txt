@@ -23,6 +23,12 @@ include("${commonlibsse-ng_SOURCE_DIR}/cmake/CommonLibSSE.cmake")
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(unofficial-tinyexpr CONFIG REQUIRED)
 
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/version.h.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/version.h"
+	@ONLY
+)
+
 add_commonlibsse_plugin(
 	GlobalRules
 	NAME "GlobalRules"
@@ -42,6 +48,7 @@ add_commonlibsse_plugin(
 
 target_compile_features(GlobalRules PRIVATE cxx_std_23)
 target_precompile_headers(GlobalRules PRIVATE PCH.h)
+target_include_directories(GlobalRules PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 target_link_libraries(
 	GlobalRules

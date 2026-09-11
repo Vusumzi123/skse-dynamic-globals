@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "Persistence.h"
+#include "version.h"
 
 namespace
 {
@@ -23,6 +24,6 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
 
     GlobalRules::Persistence::Register(SKSE::GetSerializationInterface());
 
-    SKSE::log::info("GlobalRules plugin loaded");
+    SKSE::log::info("GlobalRules plugin v{} loaded", GLOBALRULES_VERSION_STRING);
     return true;
 }

@@ -191,7 +191,7 @@ No global is written and nothing is persisted.
 ## 7. Expected log on startup
 
 ```
-[info] GlobalRules plugin loaded
+[info] GlobalRules plugin v1.0.0 loaded
 [info] loaded 18 rule(s) from 4 file(s)
 [warn] unresolved editorID 'GRT_P_AlwaysTrue' in 'GRTest.esp'
 [warn] rule #0 unresolved perk 'GRTest.esp|GRT_P_AlwaysTrue'; skipping

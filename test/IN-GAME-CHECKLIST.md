@@ -38,7 +38,7 @@ thing → `show` the global → check the log**.
 - [ ] Launch the game **through SKSE** (`skse64_loader.exe`).
 - [ ] In the log you should see:
   ```
-  GlobalRules plugin loaded
+  GlobalRules plugin v1.0.0 loaded
   loaded 18 rule(s) from 4 file(s)
   GlobalRules: 18 rule(s) indexed across 8 event type(s)
   GlobalRules: initialized
