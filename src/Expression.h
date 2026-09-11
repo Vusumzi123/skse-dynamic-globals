@@ -12,6 +12,8 @@ namespace GlobalRules
     class Expression
     {
     public:
+        static constexpr std::size_t kVarCount = 15;
+
         Expression() = default;
         ~Expression();
 
@@ -41,7 +43,7 @@ namespace GlobalRules
         bool compiled_ = false;
 
         // Persistent storage bound to te_variable addresses.
-        double values_[15]{};
+        double values_[kVarCount]{};
         std::vector<te_variable> vars_;
     };
 }

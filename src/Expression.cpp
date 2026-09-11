@@ -6,10 +6,8 @@ namespace GlobalRules
 {
     namespace
     {
-        // Fixed variable layout. Indices map to values_[].
-        constexpr std::size_t kVarCount = 15;
-
-        const char* const kVarNames[kVarCount] = {
+        // Fixed variable layout. Indices map to values_[]. Count lives on Expression.
+        const char* const kVarNames[Expression::kVarCount] = {
             "x", "level", "gold", "health", "magicka", "stamina",
             "carryweight", "speech", "count", "stage", "newLevel",
             "equipped", "opening", "entering", "targetFormID"
@@ -17,7 +15,7 @@ namespace GlobalRules
 
         int VarIndex(std::string_view a_name)
         {
-            for (std::size_t i = 0; i < kVarCount; ++i) {
+            for (std::size_t i = 0; i < Expression::kVarCount; ++i) {
                 if (a_name == kVarNames[i]) {
                     return static_cast<int>(i);
                 }
@@ -62,9 +60,9 @@ namespace GlobalRules
     void Expression::BuildVariables()
     {
         vars_.clear();
-        vars_.reserve(kVarCount + 6);
+        vars_.reserve(Expression::kVarCount + 6);
 
-        for (std::size_t i = 0; i < kVarCount; ++i) {
+        for (std::size_t i = 0; i < Expression::kVarCount; ++i) {
             vars_.push_back({ kVarNames[i], &values_[i], TE_VARIABLE, nullptr });
         }
 
