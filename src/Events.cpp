@@ -119,7 +119,9 @@ namespace GlobalRules
                 ctx.subject = Player();
                 ctx.targetRef = Player();
                 ctx.targetForm = RE::TESForm::LookupByID(a_event->cellID);
-                const bool entering = a_event->flags.any(RE::BGSActorCellEvent::CellFlag::kEnter);
+                // flags is a raw CellFlag value (0 = enter, 1 = leave), not a bitmask;
+                // any(kEnter) was always false because kEnter == 0.
+                const bool entering = a_event->flags == RE::BGSActorCellEvent::CellFlag::kEnter;
                 ctx.params["entering"] = entering ? 1.0 : 0.0;
                 EventManager::Get().Dispatch("cell_change", ctx);
                 return EventResult::kContinue;

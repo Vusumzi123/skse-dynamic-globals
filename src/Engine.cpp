@@ -105,6 +105,9 @@ namespace GlobalRules
         if (!a_rule.hasTarget) {
             return true;  // wildcard
         }
+        if (a_rule.targetFormID != 0) {
+            return a_ctx.targetForm != nullptr && a_ctx.targetForm->GetFormID() == a_rule.targetFormID;
+        }
         return a_rule.target == a_ctx.targetForm;
     }
 

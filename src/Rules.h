@@ -18,6 +18,7 @@ namespace GlobalRules
         // otherwise target holds the resolved form (nullptr = any).
         bool          hasTarget = false;
         RE::TESForm*  target = nullptr;
+        RE::FormID    targetFormID = 0;  // full runtime FormID; 0 = none
         std::string   targetName;
 
         RE::BGSPerk*  perk = nullptr;   // nullptr = always true

@@ -32,17 +32,25 @@ namespace GlobalRules
             return true;
         }
 
+        // Parses "0x000ABC" into a local FormID; returns false if not hex-shaped.
+        bool ParseHexID(std::string_view a_idText, std::uint32_t& a_out)
+        {
+            if (a_idText.size() > 2 && (a_idText[0] == '0' && (a_idText[1] == 'x' || a_idText[1] == 'X'))) {
+                const auto* begin = a_idText.data() + 2;
+                const auto* end = a_idText.data() + a_idText.size();
+                const auto  res = std::from_chars(begin, end, a_out, 16);
+                return res.ec == std::errc{} && res.ptr == end;
+            }
+            return false;
+        }
+
         RE::TESForm* ResolveLocalFormID(std::string_view a_plugin, std::string_view a_idText)
         {
-            // a_idText looks like "0x000ABC".
+            std::uint32_t localID = 0;
+            if (ParseHexID(a_idText, localID)) {
+                return RE::TESDataHandler::GetSingleton()->LookupForm(localID, a_plugin);
+            }
             if (a_idText.size() > 2 && (a_idText[0] == '0' && (a_idText[1] == 'x' || a_idText[1] == 'X'))) {
-                std::uint32_t localID = 0;
-                const auto*   begin = a_idText.data() + 2;
-                const auto*   end = a_idText.data() + a_idText.size();
-                const auto    res = std::from_chars(begin, end, localID, 16);
-                if (res.ec == std::errc{} && res.ptr == end) {
-                    return RE::TESDataHandler::GetSingleton()->LookupForm(localID, a_plugin);
-                }
                 SKSE::log::warn("invalid local FormID '{}'", a_idText);
                 return nullptr;
             }
@@ -84,6 +92,35 @@ namespace GlobalRules
             return nullptr;
         }
         return ResolveLocalFormID(plugin, rest);
+    }
+
+    RE::FormID ResolveFormID(std::string_view a_id)
+    {
+        a_id = Trim(a_id);
+        if (a_id.empty()) {
+            return 0;
+        }
+
+        const auto bar = a_id.find('|');
+        if (bar == std::string_view::npos) {
+            const auto form = RE::TESForm::LookupByEditorID(a_id);
+            return form ? form->GetFormID() : 0;
+        }
+
+        const auto plugin = Trim(a_id.substr(0, bar));
+        const auto rest = Trim(a_id.substr(bar + 1));
+        if (plugin.empty() || rest.empty()) {
+            SKSE::log::warn("malformed form identifier '{}'", a_id);
+            return 0;
+        }
+
+        std::uint32_t localID = 0;
+        if (ParseHexID(rest, localID)) {
+            return RE::TESDataHandler::GetSingleton()->LookupFormID(localID, plugin);
+        }
+
+        const auto form = RE::TESForm::LookupByEditorID(rest);
+        return form ? form->GetFormID() : 0;
     }
 
     std::string FormName(RE::TESForm* a_form)

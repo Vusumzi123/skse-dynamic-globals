@@ -86,12 +86,13 @@ namespace GlobalRules
                         rule.targetName = Trim(targetID);
                     }
                 } else if (!IsWildcard(targetID)) {
+                    rule.hasTarget = true;
                     rule.target = ResolveForm(targetID);
-                    if (!rule.target) {
+                    rule.targetFormID = ResolveFormID(targetID);
+                    if (!rule.target && !rule.targetFormID) {
                         SKSE::log::warn("rule #{} unresolved target '{}'; skipping", a_index, targetID);
                         return std::nullopt;
                     }
-                    rule.hasTarget = true;
                 }
             }
 
