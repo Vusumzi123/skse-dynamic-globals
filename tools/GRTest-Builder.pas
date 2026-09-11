@@ -124,7 +124,9 @@ begin
   faction := FindFactionByEditorID('ThievesGuildFaction');
   if Assigned(faction) then begin
     conditions := Add(perk, 'Conditions', True);
-    cond := Add(conditions, 'Condition', True);
+    cond := ElementByIndex(conditions, 0);
+    if not Assigned(cond) then
+      cond := Add(conditions, 'Condition', True);
     ctda := ElementBySignature(cond, 'CTDA');
 
     SetElementEditValues (ctda, 'Type', '10000000');                            // ==

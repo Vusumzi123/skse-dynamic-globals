@@ -105,6 +105,13 @@ Three formats are accepted for `target`, `perk`, and `global`:
 | Plugin + EditorID | `MyMod.esp\|CND_IsWeapon` | EditorID scoped to that plugin |
 | Bare EditorID | `CND_IsWeapon` | Convenience; may be ambiguous |
 
+> **EditorID resolution is best-effort.** `LookupByEditorID` only works for form types the
+> engine natively caches — `GLOB`, `KYWD`, `RACE`, `QUST`, `CELL`, `WRLD`, and a few others.
+> Perks, spells, armors, weapons, etc. resolve by EditorID **only if powerofthree's Tweaks is
+> installed** (it hooks `SetFormEditorID` to cache the uncached types). GlobalRules logs at
+> startup whether po3 Tweaks is present. When it is absent, use the FormID format for those
+> types. FormID refs always work and are the recommended, dependency-free choice.
+
 ---
 
 ## 5. Event reference

@@ -28,4 +28,9 @@ namespace GlobalRules
 
     // Human-readable name for logging: editorID, else display name, else FormID hex.
     std::string FormName(RE::TESForm* a_form);
+
+    // True if powerofthree's Tweaks (po3_Tweaks.dll) is loaded. Its
+    // SetFormEditorID vfunc hook makes TESForm::LookupByEditorID resolve form
+    // types the engine does not natively cache (e.g. Perk).
+    bool IsPo3TweaksLoaded();
 }

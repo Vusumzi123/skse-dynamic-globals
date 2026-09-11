@@ -19,8 +19,9 @@ test/
   GlobalRules/
     01-events.json            # one rule per event type
     02-expressions.json       # expression variables / functions
-    03-gating.json            # perk gate, invert, last-write-wins
+    03-gating.json            # perk gate (FormID), invert, last-write-wins
     04-edge-cases.json        # invalid rules + non-finite guard
+    05-editorid-po3.json      # perk gate via EditorID — only with po3 Tweaks
 ```
 
 The folder mirrors the deployed layout, so you copy it straight into `Data/SKSE/Plugins/`.
@@ -38,6 +39,8 @@ The folder mirrors the deployed layout, so you copy it straight into `Data/SKSE/
    Data/SKSE/Plugins/GlobalRules/03-gating.json
    Data/SKSE/Plugins/GlobalRules/04-edge-cases.json
    ```
+   `05-editorid-po3.json` is **optional** — deploy it only when testing the po3 Tweaks
+   dependency, and swap it in **instead of** `03-gating.json` (see §4).
 3. Create the test forms below in a plugin named **`GRTest.esp`** (xEdit or CK).
 4. **Enable `GRTest.esp`** (see below).
 5. Launch, then watch `Documents/My Games/Skyrim Special Edition/SKSE/GlobalRules.log`.
@@ -134,11 +137,28 @@ exactly (the rules reference them by `GRTest.esp|EditorID`).
 
 ### `03-gating.json`
 
+Perk refs use **FormID** (`GRTest.esp|0x000814`, `GRTest.esp|0x000815`) so they resolve
+regardless of po3 Tweaks.
+
 | Test | Expect |
 |---|---|
 | Perk gate | `GRT_PerkPass` +1 only if `GRT_P_AlwaysTrue` passes (it always does) |
 | Invert | `GRT_PerkInvert` +1 only while **not** in the Thieves Guild |
 | Last-write-wins | both rules write `GRT_LastWins`; final value = `newLevel` |
+
+### `05-editorid-po3.json` — editorID resolution (optional)
+
+Identical perk-gate rules but referencing the perks by **EditorID**
+(`GRTest.esp|GRT_P_AlwaysTrue`, `GRTest.esp|GRT_P_InThievesGuild`). Because `BGSPerk` is not
+an engine-cached type, these resolve only when **powerofthree's Tweaks** is loaded.
+
+- **With po3 Tweaks:** both rules load (no `unresolved editorID` warnings); behavior matches
+  `03-gating.json`.
+- **Without po3 Tweaks:** both rules are skipped with `unresolved editorID` warnings — this
+  is the expected negative result.
+
+Deploy `05-editorid-po3.json` **instead of** `03-gating.json` (they write the same globals,
+so deploying both double-increments `GRT_PerkPass`/`GRT_PerkInvert`).
 
 ### `04-edge-cases.json` — error handling
 
@@ -192,20 +212,18 @@ No global is written and nothing is persisted.
 
 ```
 [info] GlobalRules plugin v1.0.0 loaded
-[info] loaded 18 rule(s) from 4 file(s)
-[warn] unresolved editorID 'GRT_P_AlwaysTrue' in 'GRTest.esp'
-[warn] rule #0 unresolved perk 'GRTest.esp|GRT_P_AlwaysTrue'; skipping
-[warn] unresolved editorID 'GRT_P_InThievesGuild' in 'GRTest.esp'
-[warn] rule #1 unresolved perk 'GRTest.esp|GRT_P_InThievesGuild'; skipping
+[info] po3 Tweaks not detected: editorID references only resolve for natively-cached types ...
+[info] loaded 20 rule(s) from 4 file(s)
 [warn] unresolved editorID 'GRT_MissingGlobal' in 'GRTest.esp'
 [warn] rule #1 unresolved global 'GRTest.esp|GRT_MissingGlobal'; skipping
 [warn] rule #3 unknown event 'does_not_exist'; skipping
-[info] GlobalRules: 18 rule(s) indexed across 8 event type(s)
+[info] GlobalRules: 20 rule(s) indexed across 8 event type(s)
 ```
 
 22 rules exist across the 4 files. **Two** are intentionally skipped (`GRT_MissingGlobal`,
-unknown event) → **20** loaded. Right now **18** are loaded because the two `GRT_P_*` perk
-rules also fail to resolve (known bug — see [`IN-GAME-CHECKLIST.md`](IN-GAME-CHECKLIST.md) §11).
+unknown event) → **20** loaded. The two `GRT_P_*` perk rules now resolve via FormID and no
+longer produce `unresolved` warnings. If po3 Tweaks is installed the startup `po3 Tweaks`
+line is `info` instead of `warn`, and `05-editorid-po3.json` also resolves.
 
 > Note: `"x + + 1"` (the supposed bad-expression case) currently parses as `x + (+1)` and
 > loads fine; the real error path is exercised by `1/0` at runtime instead.

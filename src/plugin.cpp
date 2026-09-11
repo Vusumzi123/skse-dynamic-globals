@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "FormId.h"
 #include "Persistence.h"
 #include "version.h"
 
@@ -25,5 +26,12 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
     GlobalRules::Persistence::Register(SKSE::GetSerializationInterface());
 
     SKSE::log::info("GlobalRules plugin v{} loaded", GLOBALRULES_VERSION_STRING);
+
+    if (GlobalRules::IsPo3TweaksLoaded()) {
+        SKSE::log::info("po3 Tweaks detected: editorID references resolve for all form types");
+    } else {
+        SKSE::log::warn("po3 Tweaks not detected: editorID references only resolve for natively-cached types (Global, Keyword, Quest, Race, Cell, ...); use FormID references for perks");
+    }
+
     return true;
 }

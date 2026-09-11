@@ -11,9 +11,9 @@ thing → `show` the global → check the log**.
   ```
 
 > **Current status (2026-09-10):** the `cell_change` crash **and** the `entering` flag bug
-> are **fixed** in the deployed DLL (md5 `80f14410…`). The **perk-gated tests (§11) are
-> known-broken** — the `GRT_P_*` perks fail `LookupByEditorID`, so those two rules are
-> skipped at load. Everything else should pass.
+> are **fixed** in the deployed DLL (md5 `80f14410…`). The perk-gated rules (§11) now
+> reference the perks by **FormID**, so they resolve without po3 Tweaks. An optional
+> EditorID variant (§11.5) verifies the po3 Tweaks dependency.
 
 ---
 
@@ -39,19 +39,15 @@ thing → `show` the global → check the log**.
 - [ ] In the log you should see:
   ```
   GlobalRules plugin v1.0.0 loaded
-  loaded 18 rule(s) from 4 file(s)
-  GlobalRules: 18 rule(s) indexed across 8 event type(s)
+  po3 Tweaks not detected: ...  (or "po3 Tweaks detected: ..." if installed)
+  loaded 20 rule(s) from 4 file(s)
+  GlobalRules: 20 rule(s) indexed across 8 event type(s)
   GlobalRules: initialized
   ```
-  **18** is expected *right now* because the 2 perk rules are skipped. After the perk bug
-  is fixed it becomes **20** (only `GRT_MissingGlobal` and the unknown event stay skipped).
+  **20** is expected — only `GRT_MissingGlobal` and the unknown event are skipped.
 
 - [ ] Also expected (intentional / known):
   ```
-  [warn] unresolved editorID 'GRT_P_AlwaysTrue' in 'GRTest.esp'
-  [warn] rule #0 unresolved perk 'GRTest.esp|GRT_P_AlwaysTrue'; skipping
-  [warn] unresolved editorID 'GRT_P_InThievesGuild' in 'GRTest.esp'
-  [warn] rule #1 unresolved perk 'GRTest.esp|GRT_P_InThievesGuild'; skipping
   [warn] unresolved editorID 'GRT_MissingGlobal' in 'GRTest.esp'
   [warn] rule #1 unresolved global 'GRTest.esp|GRT_MissingGlobal'; skipping
   [warn] rule #3 unknown event 'does_not_exist'; skipping
@@ -171,10 +167,10 @@ thing → `show` the global → check the log**.
 
 ---
 
-## 11. Gating — perk / invert  ⚠️ known-broken
+## 11. Gating — perk / invert
 
-> Skip this section until the perk lookup bug is fixed — both rules are skipped at load, so
-> the globals will stay 0. Kept here so you can re-run it after the fix.
+> Perk refs use **FormID** (`GRTest.esp|0x000814`, `GRTest.esp|0x000815`), so these resolve
+> regardless of po3 Tweaks.
 
 - [ ] `bat grtreset`
 - [ ] Activate anything → `show GRT_PerkPass` → expect **+1** (perk `GRT_P_AlwaysTrue`).
@@ -187,6 +183,30 @@ thing → `show` the global → check the log**.
 - [ ] Leave the guild to restore it:
   ```
   player.removefac 0x00029DA9 1
+  ```
+
+---
+
+## 11.5 Gating — EditorID refs (po3 Tweaks dependency)
+
+> Optional. Verifies that EditorID references resolve for perk form types when
+> powerofthree's Tweaks is installed. Requires a separate launch.
+
+- [ ] Close the game and swap in the EditorID test file (rules dir = `…/Data/SKSE/Plugins/GlobalRules/`):
+  ```bash
+  mv 03-gating.json 03-gating.json.bak
+  cp <repo>/test/GlobalRules/05-editorid-po3.json .
+  ```
+  (The plugin loads every `*.json` in the folder, so moving `03` out avoids double-counting.)
+- [ ] Launch. The startup log must show `po3 Tweaks detected: ...`.
+  - **po3 Tweaks installed:** no `unresolved editorID 'GRT_P_*'` warnings; `GRT_PerkPass`
+    increments on activate as in §11.
+  - **po3 Tweaks missing:** two `unresolved editorID 'GRT_P_*'` warnings and both rules are
+    skipped (`GRT_PerkPass` stays 0) — the expected negative result.
+- [ ] Restore when done:
+  ```bash
+  rm -f 03-gating.json 05-editorid-po3.json
+  mv 03-gating.json.bak 03-gating.json
   ```
 
 ---
@@ -256,7 +276,8 @@ Console helpers: `bat grtreset`, `show <global>`, `set <global> to <v>`,
 
 - **No rules loaded** → `GRTest.esp` not enabled, or rules not in `Data/SKSE/Plugins/GlobalRules/`.
 - **Rules load but nothing fires** → wrong `target`; wildcard is `"*"`.
-- **Perk rules skipped** → known bug (see §11), not your setup.
+- **Perk rules skipped** → you used an EditorID ref to a perk without po3 Tweaks; use a FormID
+  ref instead (see §11.5).
 - **`level_increase` never fires** → you used `advlevel`/`setlevel`; those bypass the event.
   Use `advskill` + confirm in the Skills menu (see §9).
 - **Values don't persist after reload** → check the co-save / that the game saved after the change.

@@ -447,8 +447,9 @@ python3 -m json.tool test/GlobalRules/01-events.json > /dev/null # JSON validity
 | `GlobalRules.dryrun.json` | Safe config: writes nothing |
 | `GlobalRules/01-events.json` | One rule per event type (8) |
 | `GlobalRules/02-expressions.json` | `x`, `level`, `gold`, `targetFormID`, `clamp`, constant |
-| `GlobalRules/03-gating.json` | Perk gate, `invert`, last-write-wins |
+| `GlobalRules/03-gating.json` | Perk gate (FormID refs), `invert`, last-write-wins |
 | `GlobalRules/04-edge-cases.json` | Non-finite guard + 3 intentionally invalid rules |
+| `GlobalRules/05-editorid-po3.json` | Perk gate via **editorID** refs — only resolves with po3 Tweaks; swap in for `03` to test |
 | `grtreset.txt` | Console batch: `bat grtreset` resets all `GRT_*` globals |
 | `README.md` | Forms, actions, expected results |
 
@@ -513,10 +514,10 @@ via the co-save (and/or the game save's change-form data).
 
 ### 15.8 Load / error tests
 
-At startup the log should show `18 rule(s) indexed across 8 event type(s)` and warnings for
-the two unresolved `GRT_P_*` perks, the unresolved `GRT_MissingGlobal`, and the unknown event
-(see checklist §1). Once the perk lookup is fixed it becomes `20`, with only the latter two
-warnings.
+At startup the log should show `20 rule(s) indexed across 8 event type(s)` and warnings for
+the unresolved `GRT_MissingGlobal` and the unknown event (see checklist §1). The two perk
+rules now use FormID refs and resolve without warnings; a po3-only editorID test
+(`05-editorid-po3.json`) is swapped in only when testing the po3 Tweaks dependency.
 
 ### 15.9 Log location
 
@@ -543,9 +544,14 @@ Under Proton:
   safe because NG implements them as relocated game-function calls. Perks still fail
   editorID lookup — see below.
 - **Perk editorID lookup.** `GRT_P_AlwaysTrue` / `GRT_P_InThievesGuild` resolve by FormID
-  but not via `TESForm::LookupByEditorID`, while GLOBs from the same plugin resolve fine.
-  The ESP is structurally valid (correct GRUP, EDID, DATA); vanilla perks additionally
-  carry `PRKE`/`PRKF` entries. Under investigation.
+  but not via `TESForm::LookupByEditorID`. This is an engine limitation, not an ESP defect:
+  `allFormsByEditorID` is populated only for form types the engine natively caches
+  (`TESGlobal`, `BGSKeyword`, `TESQuest`, `TESRace`, `TESObjectCELL`, …); `BGSPerk` is not
+  one of them, so a perk's EDID is never inserted (even a CK-valid perk fails). FormID refs
+  work because `LookupForm` uses the universal `allForms` map. Installing powerofthree's
+  Tweaks fixes editorID lookup for perks (its `SetFormEditorID` vfunc hook inserts uncached
+  types). GlobalRules soft-detects po3 Tweaks and logs it; use FormID refs for perks when it
+  is absent.
 - **Exact `cell_change` targets are skipped at load.** Exterior `TESObjectCELL` forms aren't
   in the global form map at `kDataLoaded`, so `LookupForm`/`LookupByID` return null and the
   rule is dropped. Fix: match by **FormID** at event time, not a cached pointer — see

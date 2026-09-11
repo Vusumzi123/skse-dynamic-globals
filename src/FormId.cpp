@@ -4,6 +4,8 @@
 
 #include <charconv>
 
+#include "REX/W32.h"
+
 namespace GlobalRules
 {
     namespace
@@ -66,6 +68,17 @@ namespace GlobalRules
                 SKSE::log::warn("editorID '{}' resolves to a form in '{}', not '{}'", a_idText, file->GetFilename(), a_plugin);
             }
             return form;
+        }
+
+        using GetFormEditorIDFn = const char* (*)(std::uint32_t);
+
+        GetFormEditorIDFn GetPo3EditorIDFn()
+        {
+            static GetFormEditorIDFn fn = [] {
+                const auto mod = REX::W32::GetModuleHandleW(L"po3_Tweaks.dll");
+                return mod ? reinterpret_cast<GetFormEditorIDFn>(REX::W32::GetProcAddress(mod, "GetFormEditorID")) : nullptr;
+            }();
+            return fn;
         }
     }
 
@@ -132,10 +145,21 @@ namespace GlobalRules
         if (editorID && *editorID) {
             return editorID;
         }
+        if (const auto fn = GetPo3EditorIDFn()) {
+            const auto po3ID = fn(a_form->GetFormID());
+            if (po3ID && *po3ID) {
+                return po3ID;
+            }
+        }
         const auto name = a_form->GetName();
         if (name && *name) {
             return name;
         }
         return fmt::format("0x{:08X}", a_form->GetFormID());
+    }
+
+    bool IsPo3TweaksLoaded()
+    {
+        return REX::W32::GetModuleHandleW(L"po3_Tweaks.dll") != nullptr;
     }
 }

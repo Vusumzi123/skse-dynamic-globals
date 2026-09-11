@@ -9,34 +9,33 @@ Legend: `[ ]` open · `[~]` in progress · `[x]` done · `[!]` blocked.
 
 ## Bugs (open)
 
-### [ ] 2. Perk editorIDs fail `TESForm::LookupByEditorID`  — HIGH
-
-**Symptom.** Both `GRT_P_*` perks are skipped at load, while GLOBs from the *same*
-`GRTest.esp` resolve fine:
-
-```
-[W] unresolved editorID 'GRT_P_AlwaysTrue' in 'GRTest.esp'
-[W] rule #0 unresolved perk 'GRTest.esp|GRT_P_AlwaysTrue'; skipping
-[W] unresolved editorID 'GRT_P_InThievesGuild' in 'GRTest.esp'
-[W] rule #1 unresolved perk 'GRTest.esp|GRT_P_InThievesGuild'; skipping
-```
-
-**What we know.** `GRTest.esp` is structurally valid (correct GRUP labels, EDID, DATA; a
-missing `FULL` is fine — vanilla `IrilethVsDragons` has none). Vanilla perks additionally
-carry `PRKE`/`PRKF` entries; ours do not.
-
-**Next steps.**
-1. Point the gating rules at the perks by **FormID** (`GRTest.esp|0x000813`,
-   `0x000814`) and see whether they resolve. This isolates "not loaded" vs
-   "not in the editorID map".
-2. If FormID works, either add an editorID fallback (scan `TESDataHandler`) or fix the
-   ESP.
-3. Otherwise, update `tools/GRTest-Builder.pas` to give each perk a minimal
-   `PRKE`/`PRKF` entry and re-run xEdit.
+*(none)*
 
 ---
 
 ## Investigated — not a bug
+
+### [x] 2. Perk editorIDs fail `TESForm::LookupByEditorID`
+
+**Finding.** Not an ESP defect. `LookupByEditorID` reads the engine's `allFormsByEditorID`
+map, which is populated only for form types the engine natively caches (GLOB, KEYWORD, RACE,
+QUEST, CELL, WSP, …). `BGSPerk` is not one of them, so a perk's EDID is never inserted — a
+fully CK-valid perk fails the lookup too. GLOBs resolve because `TESGlobal` overrides
+`GetFormEditorID`. FormID refs resolve because `TESDataHandler::LookupForm` uses the
+universal `allForms` map.
+
+**Resolution.**
+1. The deterministic gating rules now reference the perks by **FormID**
+   (`GRTest.esp|0x000814`, `GRTest.esp|0x000815`) — no external dependency.
+2. EditorID references still work for perks **only when powerofthree's Tweaks is installed**
+   (its `SetFormEditorID` vfunc hook inserts uncached types into the engine map). GlobalRules
+   soft-detects po3 Tweaks at load and logs whether editorID refs to uncached types will
+   resolve. `test/GlobalRules/05-editorid-po3.json` exercises this path — swap it in for
+   `03-gating.json` to verify (deploy one or the other, not both, or `GRT_PerkPass`/`GRT_PerkInvert`
+   will double-increment).
+3. `tools/GRTest-Builder.pas` was fixed to emit exactly one `CTDA` per condition (it previously
+   produced a stray empty condition). Adding a minimal `PRKE`/`PRKF` section is still an optional
+   hygiene item — it does **not** affect the lookup.
 
 ### [x] 3. `level_increase` doesn't fire on `player.advlevel`
 
@@ -53,16 +52,17 @@ level in `Tab → Skills`.
 
 ## Tasks (open)
 
-- [x] **Rebuild + redeploy** after the code fixes:
+- [ ] **Rebuild + redeploy** after the code fixes:
   ```bash
   cd ~/Projects/sysop-brain/skse-globals/build/linux-clangcl && ninja
   cp GlobalRules.dll "/mnt/Games/SteamLibrary/steamapps/common/Skyrim Special Edition/Data/SKSE/Plugins/"
   md5sum GlobalRules.dll
   ```
-  Deployed md5 `80f1441030b467e96c3c6ff356f9545c`.
-- [ ] **Re-run in-game tests** per `test/IN-GAME-CHECKLIST.md` — §8 `cell_change` (wildcard
-      `GRT_CellEnter` + targeted `GRT_CellEnterTargeted`), then §11 gating once the perks resolve.
-- [x] **Document** the `REX::EnumSet` / `kEnter == 0` pitfall in `PLAN.md` §15.10.
+  (last deployed md5 `80f1441030b467e96c3c6ff356f9545c`; superseded by this change.)
+- [ ] **Regenerate `GRTest.esp`** with the fixed `tools/GRTest-Builder.pas` (deduped `CTDA`),
+      then confirm the perk local FormIDs are `0x000814`/`0x000815`.
+- [ ] **Re-run in-game tests** per `test/IN-GAME-CHECKLIST.md` — §8 `cell_change`, then §11
+      gating (FormID refs), then §11.5 po3 editorID check.
 - [ ] **Persistence test** — trigger changes, save, quit to desktop, reload; confirm the
       globals retain values via the co-save.
 - [ ] **Dry-run test** — swap `GlobalRules.dryrun.json` in as `GlobalRules.json`, confirm
@@ -86,3 +86,6 @@ level in `Tab → Skills`.
 - [x] Deployed `grtreset.txt` to the game root, log symlink in the project, `*GRTest.esp`
       enabled in `Plugins.txt`.
 - [x] Wrote `test/IN-GAME-CHECKLIST.md` and expanded `PLAN.md` §15.
+- [x] **Perk editorID bug resolved.** Gating rules switched to FormID refs; added po3 Tweaks
+      soft-detection + startup log, a po3-only editorID test file, and the `CTDA` dedupe fix
+      in `GRTest-Builder.pas`. See the corrected `[x]` note above.
