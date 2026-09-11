@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-11
+
 ### Added
 
 - Event sinks are now registered only for the events referenced by at least one loaded
@@ -79,7 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `cell_change` enter/leave direction was always reported as "leave" because the event
   flags value was treated as a bitmask instead of a raw enum.
 
-[Unreleased]: https://github.com/Vusumzi123/skse-dynamic-globals/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Vusumzi123/skse-dynamic-globals/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Vusumzi123/skse-dynamic-globals/releases/tag/v1.2.0
 [1.1.1]: https://github.com/Vusumzi123/skse-dynamic-globals/releases/tag/v1.1.1
 [1.1.0]: https://github.com/Vusumzi123/skse-dynamic-globals/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Vusumzi123/skse-dynamic-globals/releases/tag/v1.0.0
